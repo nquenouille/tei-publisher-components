@@ -40,8 +40,7 @@
   },
   "pb-facsimile": {
     "demo/pb-facsimile.html": "Demo",
-    "demo/pb-facsimile-2.html": "Align text page with facsimile",
-    "demo/pb-facsimile-3.html": "With Download Button"
+    "demo/pb-facsimile-2.html": "Align text page with facsimile"
   },
   "pb-image-strip": {
     "demo/pb-image-strip-view.html": "Demo with pb-view",
@@ -62,8 +61,7 @@
   "pb-leaflet-map": {
     "demo/pb-leaflet-map.html": "Demo",
     "demo/pb-leaflet-map2.html": "Show map on demand",
-    "demo/pb-leaflet-map3.html": "Map with layers",
-    "demo/pb-leaflet-map4.html": "Map with geosearch plugin"
+    "demo/pb-leaflet-map3.html": "Map with layers"
   },
   "pb-link": {
     "demo/pb-link.html": "Demo"

@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { pbMixin, waitOnce } from './pb-mixin.js';
 import { translate } from "./pb-i18n.js";
-import { registry } from "./urls.js";
 import '@polymer/iron-ajax';
 import '@polymer/paper-dialog';
 import '@polymer/paper-dialog-scrollable';
@@ -42,7 +41,6 @@ export class PbLogin extends pbMixin(LitElement) {
             /**
              * If set, only users being members of the specified group are
              * allowed to log in.
-             * Multiple groups can be defined separating items by space and/or comma.
              */
             group: {
                 type: String
@@ -251,15 +249,6 @@ export class PbLogin extends pbMixin(LitElement) {
             }
         }
         this.emitTo('pb-login', resp);
-
-        if (this.loggedIn) {
-            registry.currentUser = {
-                user: this.user,
-                groups: this.groups
-            }
-        } else {
-            registry.currentUser = null;
-        }
     }
 
     _handleError() {
@@ -276,35 +265,12 @@ export class PbLogin extends pbMixin(LitElement) {
             this._loginDialog.open();
         }
 
-        registry.currentUser = null;
         this.emitTo('pb-login', resp);
     }
 
-    /**
-     * 
-     * @param {Array<String>} arr array containg string values (name of groups)
-     * @param {String} val value to check if it's in the array
-     * @returns true if the checked values is in the array
-     */
-    _isItemInArray(arr, val) {
-        return arr.some((arrVal) => val === arrVal);
-    }
-    
-    /**
-     * 
-     * @param {object} info object returned by login function; 
-     * contains groups the user is a member of
-     * @returns true if user is member of one of defined groups
-     */
     _checkGroup(info) {
         if (this.group) {
-            let groupArray = this.group.split(/[\s+,]+/);
-            let exists = false;
-            if(info.groups)
-                groupArray.forEach(async (oneItem) => {
-                    exists = this._isItemInArray(info.groups, oneItem) || exists;
-                });
-            return exists;
+            return info.groups && info.groups.indexOf(this.group) > -1;
         }
         return true;
     }

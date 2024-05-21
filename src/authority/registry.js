@@ -30,10 +30,6 @@ export class Registry {
     this._register = name;
   }
   
-  get editable() {
-    return false;
-  }
-  
   /**
    * Query the authority and return a RegistryResult.
    *
@@ -62,9 +58,8 @@ export class Registry {
    *
    * @param item the item to output
    */
-  async select(item) {
+  select(item) {
     /* do nothing by default */
-    return Promise.resolve(item);
   }
 
   /**

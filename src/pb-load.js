@@ -120,13 +120,6 @@ export class PbLoad extends pbMixin(LitElement) {
              */
             silent: {
                 type: Boolean
-            },
-            /**
-             * Do not add internal parameters like 'start' or 'language' to the URL
-             * but leave it untouched.
-             */
-            plain: {
-                type: Boolean
             }
         };
     }
@@ -307,20 +300,19 @@ export class PbLoad extends pbMixin(LitElement) {
         }
 
         const doc = this.getDocument();
-        if (!this.plain) {
-            if (doc) {
-                params.doc = doc.path;
-            }
-
-            // set start parameter to start property, but only if not provided otherwise already
-            if (this.start && !params.start) {
-                params.start = this.start;
-            }
-
-            if (this.language) {
-                params.language = this.language;
-            }
+        if (doc) {
+            params.doc = doc.path;
         }
+
+        // set start parameter to start property, but only if not provided otherwise already
+        if (this.start && !params.start) {
+            params.start = this.start;
+        }
+
+        if (this.language) {
+            params.language = this.language;
+        }
+
         params = this.prepareParameters(params);
 
         // filter null values

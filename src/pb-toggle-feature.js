@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit-element';
 import '@polymer/paper-checkbox';
-import { pbMixin, waitOnce } from './pb-mixin.js';
+import { pbMixin } from './pb-mixin.js';
 import { registry } from "./urls.js";
 
 /**
@@ -85,7 +85,6 @@ import { registry } from "./urls.js";
  * ```
  *
  * @fires pb-toggle - Fired when the feature is toggled, it's changing properties between values of its `on` and `off` state
- * @fires pb-global-toggle - Fired if property `global` is set. Will be caught by the surrounding `pb-page`
  * @fires pb-update - When received, sets the features passed from the event
  */
 export class PbToggleFeature extends pbMixin(LitElement) {
@@ -161,14 +160,6 @@ export class PbToggleFeature extends pbMixin(LitElement) {
             initFromView: {
                 type: Boolean,
                 attribute: 'init-from-view'
-            },
-            /**
-             * If set, toggle the state of elements which reside
-             * in the surrounding HTML context below `pb-page` 
-             * (means: elements which are not inside a `pb-view` or `pb-load`).
-             */
-            global: {
-                type: Boolean
             }
         };
     }
@@ -182,7 +173,6 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         this.propertiesOn = {};
         this.propertiesOff = {};
         this.initFromView = false;
-        this.global = false;
     }
 
     render() {
@@ -206,20 +196,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         newState[this.name] = this.checked ? this.on : this.off;
         registry.replace(this, newState);
         this._saveState();
-
         this.signalReady();
-
-        waitOnce('pb-page-ready', () => {
-            if (this.global) {
-                this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: {
-                    selector: this.selector,
-                    command: this.action,
-                    state: this.checked
-                }, bubbles: true, composed: true }));
-            } else if (this.selector) {
-                this.emitTo('pb-toggle', {refresh: false});
-            }
-        });
     }
 
     _setChecked(param) {
@@ -248,13 +225,7 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         this.checked = this.shadowRoot.getElementById('checkbox').checked;
 
         this._saveState();
-        if (!this.global) {
-            this.emitTo('pb-toggle', {refresh: !this.selector});
-        } else {
-            const state = {};
-            state[this.name] = this.checked ? this.on : this.off;
-            registry.commit(this, state);
-        }
+        this.emitTo('pb-toggle', {refresh: !this.selector});
     }
 
     _saveState() {
@@ -262,17 +233,12 @@ export class PbToggleFeature extends pbMixin(LitElement) {
         state[this.name] = this.checked ? this.on : this.off;
         Object.assign(state, this.checked ? this.propertiesOn : this.propertiesOff);
         if (this.selector) {
-            const config = {
+            state.selectors = state.selectors || [];
+            addSelector({
                 selector: this.selector,
                 command: this.action,
                 state: this.checked
-            };
-            if (this.global) {
-                this.dispatchEvent(new CustomEvent('pb-global-toggle', { detail: config, bubbles: true, composed: true }));
-            } else {
-                state.selectors = state.selectors || [];
-                addSelector(config, state.selectors);
-            }
+            }, state.selectors);
         }
     }
 }

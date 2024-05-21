@@ -98,24 +98,13 @@ export class PbTableGrid extends pbMixin(LitElement) {
 
         this.subscribeTo('pb-search-resubmit', (ev) => {
             this._params = Object.assign({}, ev.detail.params);
-            for (const [k,v] of Object.entries(this._params)) {
-                if (v === null) { delete this._params[k] }
-            }
             this._submit();
         });
 
         registry.subscribe(this, (state) => {
             this._params = state;
             this._submit();
-        });
-
-        this.subscribeTo('pb-i18n-update', ev => {
-            const needsRefresh = this.language && this.language !== ev.detail.language;
-            this.language = ev.detail.language;
-            if (needsRefresh) {
-                this._submit();
-            }
-        }, []);
+        })
 
         if (!this.height) {
             const property = getComputedStyle(this).getPropertyValue('--pb-table-grid-height');
@@ -141,10 +130,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
         const pbColumns = this.querySelectorAll('pb-table-column');
         const columns = [];
         pbColumns.forEach((column) => columns.push(column.data()));
-        waitOnce('pb-page-ready', (data) => {
-            if (data && data.language) {
-                this.language = data.language;
-            }
+        waitOnce('pb-page-ready', () => {
             this._params = registry.state;
             const url = this.toAbsoluteURL(this.source);
             const config = {
@@ -179,9 +165,7 @@ export class PbTableGrid extends pbMixin(LitElement) {
                             }
                             this._params.limit = limit;
                             this._params.start = page * limit + 1;
-                            if (this.language) {
-                                this._params.language = this.language;
-                            }
+
                             registry.commit(this, this._params);
 
                             return `${prev}${prev.indexOf('?') > -1 ? '&' : '?'}${new URLSearchParams(this._params).toString()}`;
