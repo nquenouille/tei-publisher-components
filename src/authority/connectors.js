@@ -5,7 +5,7 @@ import { GND } from './gnd.js';
 import { FPB } from './fpb.js';
 import { KBGA } from './kbga.js';
 import { Anton } from './anton.js';
-import { ReconciliationService } from './reconciliation.js';
+// import { ReconciliationService } from './reconciliation.js';
 import { Custom } from './custom.js';
 
 export function createConnectors(endpoint, root) {

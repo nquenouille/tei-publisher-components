@@ -119,6 +119,12 @@ export class FPB extends Registry {
         if (json.professions && json.professions.length > 0) {
           output.profession = json.professions.map(p => p.name.de);
         }
+        if (json.bdid && json.bdid.length > 0) {
+          output.bdid = json.bdid;
+        }
+        if (json.gnd && json.gnd.length > 0) {
+          output.gnd = json.gnd;
+        }
         return output;
       })
       .catch(() => Promise.reject());
