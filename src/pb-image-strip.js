@@ -89,6 +89,9 @@ export class PbImageStrip extends pbMixin(LitElement) {
             :host {
                 display: block;
             }
+            .tei-notatedMusic {
+                font-size: 75%;
+            }
         `;
     }
 }
