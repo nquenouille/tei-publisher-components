@@ -40,21 +40,12 @@ function _details(item) {
 /**
  * Uses https://fpb.saw-leipzig.de/api to query FPB
  */
-export class FPB extends Registry {
+export class FPB_Persons extends Registry {
   
   query(key) {
     const results = [];
-    let filter;
-    switch (this._register) {
-      case 'place':
-        filter = 'place';
-        break;
-      default:
-        filter = 'person';
-        break;
-    }
     return new Promise((resolve) => {
-        fetch(`https://fpb.saw-leipzig.de/api/${filter}/search/?q=${key}`)
+        fetch(`https://fpb.saw-leipzig.de/api/person/search/?q=${key}`)
         .then((response) => {
           if (response.ok) {
             return response.json();
@@ -65,9 +56,9 @@ export class FPB extends Registry {
             json.persons.forEach((item) => {              
             const result = {
                 register: this._register,
-                id: (this._prefix ? `${this._prefix}-${item.id}` : item.id),
+                id: (this._prefix ? `${this._prefix}-${item.uuid}` : item.uuid),
                 label: _names(item),
-                link: `https://fpb.saw-leipzig.de/api/${filter}/${encodeURIComponent(item.id)}`,
+                link: `https://fpb.saw-leipzig.de/api/person/${encodeURIComponent(item.uuid)}`,
                 details: _details(item),
                 strings: [item.lastname].concat(',', item.firstname),
                 provider: 'FPB'
@@ -89,17 +80,8 @@ export class FPB extends Registry {
    * @returns {Promise<any>} promise resolving to the JSON record returned by the endpoint
    */
   async getRecord(key) {
-    let filter;
-    switch (this._register) {
-      case 'place':
-        filter = 'place';
-        break;
-      default:
-        filter = 'person';
-        break;
-    }
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return fetch(`https://fpb.saw-leipzig.de/api/${filter}/${encodeURIComponent(id)}`)
+    return fetch(`https://fpb.saw-leipzig.de/api/person/${encodeURIComponent(id)}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -109,15 +91,57 @@ export class FPB extends Registry {
       .then((json) => {
         const output = Object.assign({}, json);
         output.name = [json.lastname].concat(',',json.firstname);
-        output.link = json.id;
+        output.link = json.uuid;
         if (json.birthday && json.birthday.length > 0) {
-          output.birth = json.birthday;
+          output.birthDate = json.birthday;
+        }
+        if (json.birthplace && json.birthplace.name.length > 0) {
+          output.birthPlace = json.birthplace.name.de;
+        }
+        if (json.birthplace && json.birthplace.latitude) {
+          output.birthLat = json.birthplace.latitude.toString();
+        }
+        if (json.birthplace && json.birthplace.longitude) {
+          output.birthLng = json.birthplace.longitude.toString();
         }
         if (json.deathday && json.deathday.length > 0) {
-          output.death = json.deathday;
+          output.deathDate = json.deathday;
+        }
+        if (json.deathplace && json.deathplace.name.length > 0) {
+          output.deathPlace = json.deathplace.name.de;
+        }
+        if (json.deathplace && json.deathplace.latitude) {
+          output.deathLat = json.deathplace.latitude.toString();
+        }
+        if (json.deathplace && json.deathplace.longitude) {
+          output.deathLng = json.deathplace.longitude.toString();
+        }
+        if (json.baptismday && json.baptismday.length > 0) {
+          output.baptismDate = json.baptismday;
+        }
+        if (json.baptismplace && json.baptismplace.name.length > 0) {
+          output.baptismPlace = json.baptismplace.name.de;
+        }
+        if (json.baptismplace && json.baptismplace.latitude) {
+          output.baptismLat = json.baptismplace.latitude.toString();
+        }
+        if (json.baptismplace && json.baptismplace.longitude) {
+          output.baptismLng = json.baptismplace.longitude.toString();
+        }
+        if (json.burialday && json.burialday.length > 0) {
+          output.burialDate = json.burialday;
+        }
+        if (json.burialplace && json.burialplace.name.length > 0) {
+          output.burialPlace = json.burialplace.name.de;
+        }
+        if (json.burialplace && json.burialplace.latitude) {
+          output.burialLat = json.burialplace.latitude.toString();
+        }
+        if (json.burialplace && json.burialplace.longitude) {
+          output.burialLng = json.burialplace.longitude.toString();
         }
         if (json.professions && json.professions.length > 0) {
-          output.profession = json.professions.map(p => p.name.de);
+          output.professionOrOccupation = json.professions.map(p => p.name.de);
         }
         if (json.bdid && json.bdid.length > 0) {
           output.bdid = json.bdid;
@@ -131,31 +155,23 @@ export class FPB extends Registry {
   }
 
   info(key, container) {
-    let filter;
-    switch (this._register) {
-      case 'place':
-        filter = 'place';
-        break;
-      default:
-        filter = 'person';
-        break;
-    }
     if (!key) {
       return Promise.resolve();
     }
     return new Promise((resolve, reject) => {
       this.getRecord(key)
       .then((json) => {   
+        console.log("TESTJSON", json);
         let info = this.infoPerson(json);
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/${encodeURIComponent(json.uuid)}" target="_blank"> ${json.lastname.concat(',',json.firstname)} </a>
+            <a href="https://fpb.saw-leipzig.de/person/person/${encodeURIComponent(json.uuid)}" target="_blank"> ${json.lastname.concat(',',json.firstname)} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
-          id: this._prefix ? `${this._prefix}-${json.id}` : json.id,
+          id: this._prefix ? `${this._prefix}-${json.uuid}` : json.uuid,
           strings: [json.lastname].concat(',',json.firstname)
         });
       })
@@ -164,10 +180,10 @@ export class FPB extends Registry {
   }
 
   infoPerson(json) {
-    const profession = json.professions ? json.professions.map((p) => p.name.de) : [];
-    const birth = json.birthday ? '*'.concat(json.birthday) : '';
-    const death = json.deathday ? '✝'.concat(json.deathday) : '';
-    return `<p>${birth} ${death}</p>
-      <p>${profession.join(' ')}</p>`;
+    const professionOrOccupation = json.professions ? json.professions.map(p => p.name.de) : [];
+    const birthDate = json.birthday ? '*'.concat(json.birthday) : '';
+    const deathDate = json.deathday ? '✝'.concat(json.deathday) : '';
+    return `<p>${birthDate} ${deathDate}</p>
+      <p>${professionOrOccupation.join(' ')}</p>`;
   }
 }

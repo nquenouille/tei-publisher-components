@@ -165,6 +165,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         this.type = 'iiif';
         this.visibilityRatio = 1;
         this.defaultZoomLevel = 0;
+        this.maxZoomPixelRatio = 4;
         this.sequenceMode = false;
         this.showHomeControl = false;
         this.showNavigator = false;
@@ -244,7 +245,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
             }
 
             #runtime-overlay {
-                border: var(--pb-facsimile-border, 4px solid rgba(0, 0, 128, 0.5));
+                border: var(--pb-facsimile-border, 4px solid rgba(150, 0, 0, 0.5));
             }
 
             #viewer {
@@ -293,6 +294,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
             autoHideControls: false,
             visibilityRatio: 1,
             minZoomLevel: 1,
+            maxZoomPixelRatio: this.maxZoomPixelRatio,
             defaultZoomLevel: this.defaultZoomLevel,
             constrainDuringPan: true,
             crossOriginPolicy: this.crossOriginPolicy
@@ -397,7 +399,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
         if (!event.detail.file || event.detail.file === 0) {
             return console.error('file missing', event.detail)
         }
-
+        
         if (
             event.detail.coordinates &&
             (!event.detail.coordinates[0] ||
@@ -416,8 +418,8 @@ export class PbFacsimile extends pbMixin(LitElement) {
         if (this.viewer.currentPage() !== page) {
             this.viewer.goToPage(page);
         }
-
-        if (event.detail.coordinates) {
+        
+        if (event.detail.coordinates && this.viewer.world.getItemAt(0) !== undefined) {
             // deconstruct given coordinates into variables
             const [x1, y1, w, h] = event.detail.coordinates;
             const tiledImage = this.viewer.world.getItemAt(0);

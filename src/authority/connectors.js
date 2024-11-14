@@ -2,7 +2,10 @@ import { Metagrid } from './metagrid.js';
 import { GeoNames } from './geonames.js';
 import { Airtable } from './airtable.js';
 import { GND } from './gnd.js';
-import { FPB } from './fpb.js';
+import { FPB_Persons } from './fpb_persons.js';
+import { FPB_Places } from './fpb_places.js';
+import { FPB_Institutions } from './fpb_institutions.js';
+import { FPB_Glossary } from './fpb_glossary.js';
 import { KBGA } from './kbga.js';
 import { Anton } from './anton.js';
 // import { ReconciliationService } from './reconciliation.js';
@@ -20,8 +23,17 @@ export function createConnectors(endpoint, root) {
       case 'GeoNames':
         instance = new GeoNames(configElem);
         break;
-      case 'FPB':
-        instance = new FPB(configElem);
+      case 'FPB_Persons':
+        instance = new FPB_Persons(configElem);
+        break;
+      case 'FPB_Places':
+        instance = new FPB_Places(configElem);
+        break;
+      case 'FPB_Institutions':
+        instance = new FPB_Institutions(configElem);
+        break;
+      case 'FPB_Glossary':
+        instance = new FPB_Glossary(configElem);
         break;
       case 'Airtable':
         instance = new Airtable(configElem);
