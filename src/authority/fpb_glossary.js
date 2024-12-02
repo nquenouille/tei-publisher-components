@@ -55,8 +55,7 @@ export class FPB_Glossary extends Registry {
       .then((json) => {
         const output = Object.assign({}, json);
         const chars = {
-          '**': '',
-          '*': '-',
+          '*': '',
           '__': '',
           '^': '',
           '~': '',
