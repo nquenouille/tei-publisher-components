@@ -5,7 +5,7 @@ import { Registry } from './registry.js';
  * Uses https://fpb.saw-leipzig.de/api to query FPB
  */
 export class FPB_Glossary extends Registry {
-  
+ 
   query(key) {
     const results = [];
     return new Promise((resolve) => {
@@ -54,8 +54,20 @@ export class FPB_Glossary extends Registry {
       })
       .then((json) => {
         const output = Object.assign({}, json);
+        const chars = {
+          '**': '',
+          '*': '-',
+          '__': '',
+          '^': '',
+          '~': '',
+          ']': ': ',
+          '[': '',
+          '(': '',
+          ')': ''
+        };
+        
         output.title = json.title.de;
-        output.desc = json.text.de;
+        output.desc = json.text.de.replace(/[*]/g, m => chars[m]);
         output.link = json.slug;
         return output;
       })
