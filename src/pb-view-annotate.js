@@ -545,6 +545,7 @@ class PbViewAnnotate extends PbView {
           changed = true;
         }
       }
+      this._markSelection(range);
       this._currentSelection = range;
       console.log('<pb-view-annotate> selection: %o', range);
 
@@ -559,8 +560,36 @@ class PbViewAnnotate extends PbView {
 
       this.emitTo('pb-selection-changed', { hasContent: true, range });
     } else {
+      this._clearSelection();
       this.emitTo('pb-selection-changed', { hasContent: false });
     }
+  }
+
+  _markSelection(range) {
+    const root = this.shadowRoot.getElementById('view');
+    const rootRect = root.getBoundingClientRect();
+    const markerLayer = this.shadowRoot.getElementById('marker-layer');
+    this._clearSelection();
+    const rects = range.getClientRects();
+    for (let i = 0; i < rects.length; i++) {
+      const rect = rects[i];
+      const marker = document.createElement('div');
+      marker.className = `selection-marker`;
+      marker.style.position = 'absolute';
+      marker.style.left = `${rect.left - rootRect.left}px`;
+      marker.style.top = `${rect.top - rootRect.top}px`;
+      marker.style.width = `${rect.width}px`;
+      marker.style.height = `${rect.height}px`;
+      marker.style.backgroundColor = `var(--pb-annotation-selection, #f9ea7678)`;
+      markerLayer.appendChild(marker);
+    }
+  }
+
+  _clearSelection() {
+    const markerLayer = this.shadowRoot.getElementById('marker-layer');
+    markerLayer.querySelectorAll('.selection-marker').forEach((oldMarker) => {
+      markerLayer.removeChild(oldMarker);
+    });
   }
 
   updateAnnotation(teiRange, batch = false) {
@@ -746,6 +775,7 @@ class PbViewAnnotate extends PbView {
       });
       div.appendChild(editBtn);
     }
+  
     const delBtn = document.createElement('paper-icon-button');
     delBtn.setAttribute('icon', 'icons:delete');
     delBtn.setAttribute('title', i18n('annotations.delete'));
@@ -766,13 +796,19 @@ class PbViewAnnotate extends PbView {
       hideOnClick: false,
       maxWidth: 'auto',
       trigger: 'click',
-      placement: 'left',
+      placement: 'right',
       popperOptions: {
         modifiers: [
           {
             name: 'flip',
             options: {
-              fallbackPlacements: ['right', 'top', 'bottom'],
+              fallbackPlacements: ['left', 'top', 'bottom'],
+            },
+          },
+          {
+          name: 'preventOverflow',
+            options: {
+              altAxis: true,
             },
           },
         ],
@@ -1117,6 +1153,11 @@ class PbViewAnnotate extends PbView {
             text-decoration: none;
             font-variant: normal;
             padding: 2px;
+        }
+
+        .annotation.before::after {
+          margin-left: 0;
+          border-radius: 4px;
         }
 
         [part=highlight] {
