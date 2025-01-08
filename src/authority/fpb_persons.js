@@ -4,30 +4,40 @@ import { Registry } from './registry.js';
 function _names(item) {
   let lastnames = '';
   let firstnames = '';
-  if(item.lastname && item.lastname.length > 0) {
+  let ton = '';
+  if(item.lastname && item.lastname != null) {
     lastnames = item.lastname;
   }
+  else if (item.lastname == null && item.title_of_nobility != null)
+    ton = ', ' + item.title_of_nobility;
   else
-    lastnames= 'NN'
-  if (item.firstname && item.firstname.length > 0) {
-    firstnames = item.firstname;
+    lastnames = 'NN, '
+  if (item.firstname && item.firstname != null && item.lastname && item.lastname != null) {
+    firstnames = ', ' + item.firstname;
   }
-  else 
-    firstnames = 'NN'
-  return `${lastnames}, ${firstnames}`;
+  else if (item.firstname && item.firstname != null && item.lastname == null) {
+    firstnames = item.firstname;
+
+  }
+  else if (item.firstname == null && item.lastname != null)
+    firstnames = ', NN';
+  else {
+    firstnames = 'NN';
+  }
+  return `${lastnames}${firstnames}${ton}`;
 }
 function _details(item) {
   let profession = '';
-  if (item.professions && item.professions.length > 0) {
-    profession = item.professions.map(p => p.name.de).join(', ');
+  if (item.professions && item.professions.map(p => p.name.de) != null) {
+    profession = item.professions.map(p =>p.name.de).join(', ');
   }
   const dates = [];
-  if (item.birthday && item.birthday.length > 0) {
+  if (item.birthday && item.birthday != null) {
     dates.push('*');
     dates.push(item.birthday);
     dates.push(', ');
   }
-  if (item.deathday && item.deathday.length > 0) {    
+  if (item.deathday && item.deathday != null) {    
     dates.push('✝')
     dates.push(item.deathday);
   }
@@ -53,14 +63,27 @@ export class FPB_Persons extends Registry {
           return Promise.reject();
         })
         .then((json) => {
-            json.persons.forEach((item) => {              
+            json.persons.forEach((item) => {  
+              console.log("ITEM", item);
+              let lastname = '';
+              let firstname = '';
+              let ton = '';
+              if (item.lastname != null) {
+                lastname = item.lastname + ', ';
+              } else lastname = '';
+              if (item.firstname != null) {
+                firstname = item.firstname;
+              } else {firstname = '';}  
+              if (item.title_of_nobility != null) {
+                ton = ', ' + item.title_of_nobility;
+              } else {ton = '';}           
             const result = {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.uuid}` : item.uuid),
                 label: _names(item),
                 link: `https://fpb.saw-leipzig.de/api/person/${encodeURIComponent(item.uuid)}`,
                 details: _details(item),
-                strings: [item.lastname].concat(',', item.firstname),
+                strings: lastname + firstname + ton,
                 provider: 'FPB'
             };
             results.push(result);
@@ -90,64 +113,77 @@ export class FPB_Persons extends Registry {
       })
       .then((json) => {
         const output = Object.assign({}, json);
-        output.name = [json.lastname].concat(',',json.firstname);
+        if (json.lastname && json.lastname != null && json.firstname && json.firstname != null) {
+        output.name = json.lastname + ', ' + json.firstname;} 
+          else if (!json.lastname && json.lastname == null && json.firstname && json.firstname != null && !json.title_of_nobility && json.title_of_nobility == null) {
+            output.name = 'NN, ' + json.firstname
+          } 
+          else if (json.lastname && json.lastname != null && !json.firstname && json.firstname == null) {
+            output.name = json.lastname + ', NN'
+          }
+          else if (!json.lastname && json.lastname == null && json.firstname && json.firstname != null && json.title_of_nobility && json.title_of_nobility != null)
+            output.name = json.firsname + ', ' + json.title_of_nobility
+          else {output.name = 'NN'}
         output.link = json.uuid;
-        if (json.birthday && json.birthday.length > 0) {
+        if (json.title_of_nobility && json.title_of_nobility != null) {
+          output.titleOfNobility = json.title_of_nobility
+        }
+        if (json.birthday && json.birthday != null) {
           output.birthDate = json.birthday;
         }
-        if (json.birthplace && json.birthplace.name.length > 0) {
-          output.birthPlace = json.birthplace.name.de;
+        if (json.birthplace && json.birthplace.name[0].value != null) {
+          output.birthPlace = json.birthplace.name[0].value;
         }
-        if (json.birthplace && json.birthplace.latitude) {
+        if (json.birthplace && json.birthplace.latitude != null) {
           output.birthLat = json.birthplace.latitude.toString();
         }
-        if (json.birthplace && json.birthplace.longitude) {
+        if (json.birthplace && json.birthplace.longitude != null) {
           output.birthLng = json.birthplace.longitude.toString();
         }
-        if (json.deathday && json.deathday.length > 0) {
+        if (json.deathday && json.deathday != null) {
           output.deathDate = json.deathday;
         }
-        if (json.deathplace && json.deathplace.name.length > 0) {
-          output.deathPlace = json.deathplace.name.de;
+        if (json.deathplace && json.deathplace.name[0].value != null) {
+          output.deathPlace = json.deathplace.name[0].value;
         }
-        if (json.deathplace && json.deathplace.latitude) {
+        if (json.deathplace && json.deathplace.latitude != null) {
           output.deathLat = json.deathplace.latitude.toString();
         }
-        if (json.deathplace && json.deathplace.longitude) {
+        if (json.deathplace && json.deathplace.longitude != null) {
           output.deathLng = json.deathplace.longitude.toString();
         }
-        if (json.baptismday && json.baptismday.length > 0) {
+        if (json.baptismday && json.baptismday != null) {
           output.baptismDate = json.baptismday;
         }
-        if (json.baptismplace && json.baptismplace.name.length > 0) {
-          output.baptismPlace = json.baptismplace.name.de;
+        if (json.baptismplace && json.baptismplace.name[0].value != null) {
+          output.baptismPlace = json.baptismplace.name[0].value;
         }
-        if (json.baptismplace && json.baptismplace.latitude) {
+        if (json.baptismplace && json.baptismplace.latitude != null) {
           output.baptismLat = json.baptismplace.latitude.toString();
         }
-        if (json.baptismplace && json.baptismplace.longitude) {
+        if (json.baptismplace && json.baptismplace.longitude != null) {
           output.baptismLng = json.baptismplace.longitude.toString();
         }
-        if (json.burialday && json.burialday.length > 0) {
+        if (json.burialday && json.burialday != null) {
           output.burialDate = json.burialday;
         }
-        if (json.burialplace && json.burialplace.name.length > 0) {
-          output.burialPlace = json.burialplace.name.de;
+        if (json.burialplace && json.burialplace.name[0].value != null) {
+          output.burialPlace = json.burialplace.name[0].value;
         }
-        if (json.burialplace && json.burialplace.latitude) {
+        if (json.burialplace && json.burialplace.latitude != null) {
           output.burialLat = json.burialplace.latitude.toString();
         }
-        if (json.burialplace && json.burialplace.longitude) {
+        if (json.burialplace && json.burialplace.longitude != null) {
           output.burialLng = json.burialplace.longitude.toString();
         }
-        if (json.professions && json.professions.length > 0) {
-          output.professionOrOccupation = json.professions.map(p => p.name.de);
+        if (json.professions && json.professions.map(p =>p.name[0]) != null) {
+          output.professionOrOccupation = json.professions.map(p =>p.name[0].value);
         }
-        if (json.bdid && json.bdid.length > 0) {
+        if (json.bdid && json.bdid != null) {
           output.bdid = json.bdid;
         }
-        if (json.gnd && json.gnd.length > 0) {
-          output.gnd = json.gnd;
+        if (json.gnd.value && json.gnd.value != null) {
+          output.gnd = json.gnd.value;
         }
         return output;
       })
@@ -161,18 +197,30 @@ export class FPB_Persons extends Registry {
     return new Promise((resolve, reject) => {
       this.getRecord(key)
       .then((json) => {   
-        console.log("TESTJSON", json);
         let info = this.infoPerson(json);
+        let lastname = '';
+        let firstname = '';
+        let ton = '';
+        if (json.lastname != null) {
+          lastname = json.lastname;
+        } 
+        else if (json.lastname == null && json.title_of_nobility != null) {
+          ton = ', ' + json.title_of_nobility; 
+        }
+        else lastname = 'NN';
+        if (json.firstname != null) {
+          firstname = json.firstname;
+        } else firstname = 'NN';
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/person/person/${encodeURIComponent(json.uuid)}" target="_blank"> ${json.lastname.concat(',',json.firstname)} </a>
+            <a href="https://fpb.saw-leipzig.de/person/person/${encodeURIComponent(json.uuid)}" target="_blank"> ${lastname + ', ' + firstname + ton} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
           id: this._prefix ? `${this._prefix}-${json.uuid}` : json.uuid,
-          strings: [json.lastname].concat(',',json.firstname)
+          strings: [lastname].concat(',',firstname)
         });
       })
       .catch(() => reject());
@@ -180,9 +228,9 @@ export class FPB_Persons extends Registry {
   }
 
   infoPerson(json) {
-    const professionOrOccupation = json.professions ? json.professions.map(p => p.name.de) : [];
-    const birthDate = json.birthday ? '*'.concat(json.birthday) : '';
-    const deathDate = json.deathday ? '✝'.concat(json.deathday) : '';
+    const professionOrOccupation = json.professions && json.professions.map(p =>p.name[0]) != null ? json.professions.map(p =>p.name[0].value) : [];
+    const birthDate = json.birthday != null ? '*'.concat(json.birthday) : '';
+    const deathDate = json.deathday != null ? '✝'.concat(json.deathday) : '';
     return `<p>${birthDate} ${deathDate}</p>
       <p>${professionOrOccupation.join(' ')}</p>`;
   }

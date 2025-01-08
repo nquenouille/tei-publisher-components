@@ -2,22 +2,23 @@
 import { Registry } from './registry.js';
 
 function _details(item) {
-    let gnd = item.gnd ? item.gnd : '';
+    let gnd = item.gnd && item.gnd.value ? item.gnd.value : '';
     let lat = item.latitude ? item.latitude.toString() : '';
     let lng = item.longitude ? item.longitude.toString() : '';
-    if (lat.startsWith('-')) {
+    if (item.latitude && lat.startsWith('-')) {
         lat = 'S '.concat(lat.split('-')[1]);
     } else {
         lat = 'N '.concat(lat);
     }
-    if (lng.startsWith('-')) {
+    if (item.longitude && lng.startsWith('-')) {
         lng = 'W '.concat(lng.split('-')[1]);
     } else {
         lng = 'E '.concat(lng);
     }
-    if (item.gnd && item.gnd.length > 0) {
-        gnd = 'GND: '.concat(item.gnd);
+    if (item.gnd && item.gnd.value != null) {
+        gnd = 'GND: '.concat(item.gnd.value);
       }
+      else gnd=' (no GND)';
     return `${lat.concat(', ', lng, ' ', gnd)}`;
   }
 
@@ -37,7 +38,7 @@ export class FPB_Places extends Registry {
           return Promise.reject();
         })
         .then((json) => {
-            json.places.forEach((item) => {             
+            json.places.forEach((item) => {        
             const result = {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.uuid}` : item.uuid),
@@ -74,7 +75,7 @@ export class FPB_Places extends Registry {
       })
       .then((json) => {
         const output = Object.assign({}, json);
-        output.name = json.name.de;
+        output.name = json.name[0].value;
         output.link = json.uuid;
         if (json.latitude) {
           output.lat = json.latitude.toString();
@@ -83,10 +84,10 @@ export class FPB_Places extends Registry {
           output.lng = json.longitude.toString();
         }
         if (json.geonames) {
-          output.geonames = json.geonames.toString();
+          output.geonames = json.geonames.value.toString();
         }
-        if (json.gnd && json.gnd.length > 0) {
-            output.gnd = json.gnd;
+        if (json.gnd && json.gnd.value != null) {
+            output.gnd = json.gnd.value;
         }
         return output;
       })
@@ -103,14 +104,14 @@ export class FPB_Places extends Registry {
         let info = this.infoPlace(json);
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/places/place/${encodeURIComponent(json.uuid)}" target="_blank"> ${json.name} </a>
+            <a href="https://fpb.saw-leipzig.de/places/${encodeURIComponent(json.uuid)}" target="_blank"> ${json.name} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
           id: this._prefix ? `${this._prefix}-${json.uuid}` : json.uuid,
-          strings: json.name.de
+          strings: json.name[0].value
         });
       })
       .catch(() => reject());

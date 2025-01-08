@@ -3,12 +3,12 @@ import { Registry } from './registry.js';
 
 function _details(item) {
     let place = '';
-    if (item.place.name.de && item.place.name.de.length > 0) {
+    if (item.place.name && item.place.name.de != null) {
       place = item.place.name.de;
     }
     let gnd = '';
-    if (item.gnd && item.gnd.length > 0) {
-      gnd = 'GND: '.concat(item.gnd);
+    if (item.gnd && item.gnd.value != null) {
+      gnd = 'GND: '.concat(item.gnd.value);
     }
      return `${place.concat(' ', gnd)}`;
     }
@@ -29,9 +29,7 @@ export class FPB_Institutions extends Registry {
           return Promise.reject();
         })
         .then((json) => {
-            console.log("JSON Inst", json);
-            json.institutions.forEach((item) => { 
-                console.log("JSON item", item);             
+            json.institutions.forEach((item) => {          
             const result = {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.uuid}` : item.uuid),
@@ -67,33 +65,32 @@ export class FPB_Institutions extends Registry {
         return Promise.reject();
       })
       .then((json) => {
-        console.log("JSON Inst2", json);
         const output = Object.assign({}, json);
-        output.name = json.name.de;
+        output.name = json.name[0].value;
         output.link = json.uuid;
-        if (json.place.name.de && json.place.name.de.length > 0) {
-            output.place = json.place.name.de;
+        if (json.place.name[0] && json.place.name[0].value != null) {
+            output.place = json.place.name[0].value;
           }
-        if (json.latitude && json.latitude.toString() > 0) {
+        if (json.latitude && json.latitude.toString() != null) {
             output.lat = json.latitude.toString();
           }
-          if (json.longitude && json.longitude.toString() > 0) {
+          if (json.longitude && json.longitude.toString() != null) {
             output.lng = json.longitude.toString();
           }
-          if (json.geonames && json.geonames.toString() > 0) {
+          if (json.geonames && json.geonames.toString() != null) {
             output.geonames = json.geonames.toString();
           }
-          if (json.rism && json.rism.length > 0) {
-              output.rism = json.rism;
+          if (json.rism && json.rism.value != null) {
+              output.rism = json.rism.value;
           }
-          if (json.viaf && json.viaf.length > 0) {
-              output.viaf = json.viaf;
+          if (json.viaf && json.viaf.value != null) {
+              output.viaf = json.viaf.value;
           }
-          if (json.isil && json.isil.length > 0) {
-              output.isil = json.isil;
+          if (json.isil && json.isil.value != null) {
+              output.isil = json.isil.value;
           }
-          if (json.gnd && json.gnd.length > 0) {
-              output.gnd = json.gnd;
+          if (json.gnd && json.gnd.value != null) {
+              output.gnd = json.gnd.value;
           }
         return output;
       })
@@ -106,7 +103,7 @@ export class FPB_Institutions extends Registry {
     }
     return new Promise((resolve, reject) => {
       this.getRecord(key)
-      .then((json) => {   
+      .then((json) => {
         let info = this.infoInstitution(json);
         const out = `
           <h3 class="label">
@@ -117,7 +114,7 @@ export class FPB_Institutions extends Registry {
         container.innerHTML = out;
         resolve({
           id: this._prefix ? `${this._prefix}-${json.uuid}` : json.uuid,
-          strings: json.name.de
+          strings: json.name[0].value
         });
       })
       .catch(() => reject());
@@ -125,8 +122,7 @@ export class FPB_Institutions extends Registry {
   }
 
   infoInstitution(json) {
-    console.log("Last", json);
-    const rism = json.rism ? json.rism : 'Ohne RISM-Sigel';
+    const rism = json.rism.value ? json.rism.value : 'Ohne RISM-Sigel';
     return `<p>${rism}</p>`;
   }
 }
