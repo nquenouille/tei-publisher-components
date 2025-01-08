@@ -28,7 +28,7 @@ function _names(item) {
 }
 function _details(item) {
   let profession = '';
-  if (item.professions && item.professions.map(p => p.name.de) != null) {
+  if (item.professions.length > 0 && item.professions.map(p => p.name.de) != null) {
     profession = item.professions.map(p =>p.name.de).join(', ');
   }
   const dates = [];
@@ -176,7 +176,7 @@ export class FPB_Persons extends Registry {
         if (json.burialplace && json.burialplace.longitude != null) {
           output.burialLng = json.burialplace.longitude.toString();
         }
-        if (json.professions && json.professions.map(p =>p.name[0]) != null) {
+        if (json.professions.length > 0 && json.professions.map(p =>p.name[0]) != null) {
           output.professionOrOccupation = json.professions.map(p =>p.name[0].value);
         }
         if (json.bdid && json.bdid != null) {
@@ -228,7 +228,7 @@ export class FPB_Persons extends Registry {
   }
 
   infoPerson(json) {
-    const professionOrOccupation = json.professions && json.professions.map(p =>p.name[0]) != null ? json.professions.map(p =>p.name[0].value) : [];
+    const professionOrOccupation = json.professions.length > 0 && json.professions.map(p =>p.name[0]) != null ? json.professions.map(p =>p.name[0].value) : [];
     const birthDate = json.birthday != null ? '*'.concat(json.birthday) : '';
     const deathDate = json.deathday != null ? '✝'.concat(json.deathday) : '';
     return `<p>${birthDate} ${deathDate}</p>
