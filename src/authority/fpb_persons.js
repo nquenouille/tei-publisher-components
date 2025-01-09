@@ -64,7 +64,6 @@ export class FPB_Persons extends Registry {
         })
         .then((json) => {
             json.persons.forEach((item) => {  
-              console.log("ITEM", item);
               let lastname = '';
               let firstname = '';
               let ton = '';
