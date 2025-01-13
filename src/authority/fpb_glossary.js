@@ -83,7 +83,7 @@ export class FPB_Glossary extends Registry {
         let info = json.title.de;
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(json.slug)}" target="_blank"> ${json.lastname.concat(',',json.firstname)} </a>
+            <a href="https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(json.slug)}" target="_blank"> ${json.title.de} </a>
           </h3>
           ${info}
         `;
