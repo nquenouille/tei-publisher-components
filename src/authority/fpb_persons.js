@@ -121,7 +121,7 @@ export class FPB_Persons extends Registry {
             output.name = json.lastname + ', NN'
           }
           else if (!json.lastname && json.lastname == null && json.firstname && json.firstname != null && json.title_of_nobility && json.title_of_nobility != null)
-            output.name = json.firsname + ', ' + json.title_of_nobility
+            output.name = json.firstname + ', ' + json.title_of_nobility
           else {output.name = 'NN'}
         output.link = json.uuid;
         if (json.title_of_nobility && json.title_of_nobility != null) {
@@ -130,49 +130,49 @@ export class FPB_Persons extends Registry {
         if (json.birthday && json.birthday != null) {
           output.birthDate = json.birthday;
         }
-        if (json.birthplace && json.birthplace.name[0].value != null) {
+        if (json.birthplace != null && json.birthplace.name[0].value != null) {
           output.birthPlace = json.birthplace.name[0].value;
         }
-        if (json.birthplace && json.birthplace.latitude != null) {
+        if (json.birthplace != null && json.birthplace.latitude != null) {
           output.birthLat = json.birthplace.latitude.toString();
         }
-        if (json.birthplace && json.birthplace.longitude != null) {
+        if (json.birthplace != null && json.birthplace.longitude != null) {
           output.birthLng = json.birthplace.longitude.toString();
         }
         if (json.deathday && json.deathday != null) {
           output.deathDate = json.deathday;
         }
-        if (json.deathplace && json.deathplace.name[0].value != null) {
+        if (json.deathplace != null && json.deathplace.name[0].value != null) {
           output.deathPlace = json.deathplace.name[0].value;
         }
-        if (json.deathplace && json.deathplace.latitude != null) {
+        if (json.deathplace != null && json.deathplace.latitude != null) {
           output.deathLat = json.deathplace.latitude.toString();
         }
-        if (json.deathplace && json.deathplace.longitude != null) {
+        if (json.deathplace != null && json.deathplace.longitude != null) {
           output.deathLng = json.deathplace.longitude.toString();
         }
         if (json.baptismday && json.baptismday != null) {
           output.baptismDate = json.baptismday;
         }
-        if (json.baptismplace && json.baptismplace.name[0].value != null) {
+        if (json.baptismplace != null && json.baptismplace.name[0].value != null) {
           output.baptismPlace = json.baptismplace.name[0].value;
         }
-        if (json.baptismplace && json.baptismplace.latitude != null) {
+        if (json.baptismplace != null && json.baptismplace.latitude != null) {
           output.baptismLat = json.baptismplace.latitude.toString();
         }
-        if (json.baptismplace && json.baptismplace.longitude != null) {
+        if (json.baptismplace != null && json.baptismplace.longitude != null) {
           output.baptismLng = json.baptismplace.longitude.toString();
         }
         if (json.burialday && json.burialday != null) {
           output.burialDate = json.burialday;
         }
-        if (json.burialplace && json.burialplace.name[0].value != null) {
+        if (json.burialplace != null && json.burialplace.name[0].value != null) {
           output.burialPlace = json.burialplace.name[0].value;
         }
-        if (json.burialplace && json.burialplace.latitude != null) {
+        if (json.burialplace != null && json.burialplace.latitude != null) {
           output.burialLat = json.burialplace.latitude.toString();
         }
-        if (json.burialplace && json.burialplace.longitude != null) {
+        if (json.burialplace != null && json.burialplace.longitude != null) {
           output.burialLng = json.burialplace.longitude.toString();
         }
         if (json.professions.length > 0 && json.professions.map(p =>p.name[0]) != null) {
@@ -181,7 +181,7 @@ export class FPB_Persons extends Registry {
         if (json.bdid && json.bdid != null) {
           output.bdid = json.bdid;
         }
-        if (json.gnd.value && json.gnd.value != null) {
+        if (json.gnd && json.gnd != null) {
           output.gnd = json.gnd.value;
         }
         return output;
