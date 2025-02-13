@@ -765,7 +765,7 @@ class PbViewAnnotate extends PbView {
     typeInd.className = 'annotation-type';
     div.appendChild(typeInd);
 
-    if (span.dataset.annotation) {
+    if (span.dataset.annotation && span.dataset.type !== 'ab') { /* Do not show a edit button, when tag 'ab' is set */
       const editBtn = document.createElement('paper-icon-button');
       editBtn.setAttribute('icon', 'icons:create');
       editBtn.setAttribute('title', i18n('annotations.edit'));
@@ -775,7 +775,8 @@ class PbViewAnnotate extends PbView {
       });
       div.appendChild(editBtn);
     }
-  
+
+    if (span.dataset.type !== 'ab') { /* Do not show a delete button, when tag 'ab' is set */
     const delBtn = document.createElement('paper-icon-button');
     delBtn.setAttribute('icon', 'icons:delete');
     delBtn.setAttribute('title', i18n('annotations.delete'));
@@ -785,6 +786,7 @@ class PbViewAnnotate extends PbView {
     });
     div.appendChild(delBtn);
     wrapper.appendChild(div);
+    }
 
     const root = this.shadowRoot.getElementById('view');
     tippy(span, {
