@@ -253,8 +253,30 @@ export class PbLeafletMap extends pbMixin(LitElement) {
             this._initMap.bind(this),
             { once: true }
         );
-    }
 
+        // FPB Modification: Show map when changing the panel
+        const mapContainer = this.renderRoot.querySelector('#map');
+        const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${this.accessToken}`;
+        if (mapContainer) {
+            this._map = L.map(mapContainer, { zoom: this.zoom });
+            L.tileLayer(url, {
+                attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+                maxZoom: 18,
+                zoomOffset: -1,
+                tileSize: 512,
+            }).addTo(this._map);
+            
+        // Initialize Marker Layer
+        this._configureLayers();
+        this._configureMarkers();
+        this._map.fitWorld();
+        this._markerLayer = L.layerGroup().addTo(this._map);
+        } else {
+            console.error('Map container not found in firstUpdated!');
+        }
+        this._map.invalidateSize();
+    }
+    
     render() {
         const cssPath = resolveURL(this.cssPath);
         return html`
