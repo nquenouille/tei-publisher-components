@@ -260,7 +260,7 @@ export class PbLeafletMap extends pbMixin(LitElement) {
         if (mapContainer) {
             this._map = L.map(mapContainer, { zoom: this.zoom });
             L.tileLayer(url, {
-                attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+                attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a>',
                 maxZoom: 18,
                 zoomOffset: -1,
                 tileSize: 512,
