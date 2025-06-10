@@ -78,9 +78,9 @@ export class FPB_Persons extends Registry {
               } else {ton = '';}           
             const result = {
                 register: this._register,
-                id: (this._prefix ? `${this._prefix}-${item.uuid}` : item.uuid),
+                id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: _names(item),
-                link: `https://fpb.saw-leipzig.de/api/person/${encodeURIComponent(item.uuid)}`,
+                link: `https://fpb.saw-leipzig.de/api/person/${encodeURIComponent(item.pid)}`,
                 details: _details(item),
                 strings: lastname + firstname + ton,
                 provider: 'FPB'
@@ -123,7 +123,7 @@ export class FPB_Persons extends Registry {
           else if (!json.lastname && json.lastname == null && json.firstname && json.firstname != null && json.title_of_nobility && json.title_of_nobility != null)
             output.name = json.firstname + ', ' + json.title_of_nobility
           else {output.name = 'NN'}
-        output.link = json.uuid;
+        output.link = json.pid;
         if (json.title_of_nobility && json.title_of_nobility != null) {
           output.titleOfNobility = json.title_of_nobility
         }
@@ -212,13 +212,13 @@ export class FPB_Persons extends Registry {
         } else firstname = 'NN';
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/person/person/${encodeURIComponent(json.uuid)}" target="_blank"> ${lastname + ', ' + firstname + ton} </a>
+            <a href="https://fpb.saw-leipzig.de/person/person/${encodeURIComponent(json.pid)}" target="_blank"> ${lastname + ', ' + firstname + ton} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
-          id: this._prefix ? `${this._prefix}-${json.uuid}` : json.uuid,
+          id: this._prefix ? `${this._prefix}-${json.pid}` : json.pid,
           strings: [lastname].concat(',',firstname)
         });
       })

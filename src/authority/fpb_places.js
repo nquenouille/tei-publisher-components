@@ -41,9 +41,9 @@ export class FPB_Places extends Registry {
             json.places.forEach((item) => {        
             const result = {
                 register: this._register,
-                id: (this._prefix ? `${this._prefix}-${item.uuid}` : item.uuid),
+                id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: item.name.de,
-                link: `https://fpb.saw-leipzig.de/places/place/${encodeURIComponent(item.uuid)}`,
+                link: `https://fpb.saw-leipzig.de/places/place/${encodeURIComponent(item.pid)}`,
                 details: _details(item),
                 strings: item.name.de,
                 provider: 'FPB_Places'
@@ -76,7 +76,7 @@ export class FPB_Places extends Registry {
       .then((json) => {
         const output = Object.assign({}, json);
         output.name = json.name[0].value;
-        output.link = json.uuid;
+        output.link = json.pid;
         if (json.latitude) {
           output.lat = json.latitude.toString();
         }
@@ -104,13 +104,13 @@ export class FPB_Places extends Registry {
         let info = this.infoPlace(json);
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/places/${encodeURIComponent(json.uuid)}" target="_blank"> ${json.name} </a>
+            <a href="https://fpb.saw-leipzig.de/places/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
-          id: this._prefix ? `${this._prefix}-${json.uuid}` : json.uuid,
+          id: this._prefix ? `${this._prefix}-${json.pid}` : json.pid,
           strings: json.name[0].value
         });
       })

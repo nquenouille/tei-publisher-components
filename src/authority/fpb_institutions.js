@@ -32,9 +32,9 @@ export class FPB_Institutions extends Registry {
             json.institutions.forEach((item) => {          
             const result = {
                 register: this._register,
-                id: (this._prefix ? `${this._prefix}-${item.uuid}` : item.uuid),
+                id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: item.name.de,
-                link: `https://fpb.saw-leipzig.de/places/institution/${encodeURIComponent(item.uuid)}`,
+                link: `https://fpb.saw-leipzig.de/places/institution/${encodeURIComponent(item.pid)}`,
                 details: _details(item),
                 strings: item.name.de,
                 provider: 'FPB_Institutions'
@@ -67,7 +67,7 @@ export class FPB_Institutions extends Registry {
       .then((json) => {
         const output = Object.assign({}, json);
         output.name = json.name[0].value;
-        output.link = json.uuid;
+        output.link = json.pid;
         if (json.place.name[0] && json.place.name[0].value != null) {
             output.place = json.place.name[0].value;
           }
@@ -107,13 +107,13 @@ export class FPB_Institutions extends Registry {
         let info = this.infoInstitution(json);
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/places/institution/${encodeURIComponent(json.uuid)}" target="_blank"> ${json.name.concat(' (', json.place, ')')} </a>
+            <a href="https://fpb.saw-leipzig.de/places/institution/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name.concat(' (', json.place, ')')} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
-          id: this._prefix ? `${this._prefix}-${json.uuid}` : json.uuid,
+          id: this._prefix ? `${this._prefix}-${json.pid}` : json.pid,
           strings: json.name[0].value
         });
       })
