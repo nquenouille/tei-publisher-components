@@ -344,10 +344,13 @@ export class PbPopover extends pbMixin(LitElement) {
                 };
             }
             options.onShow = (instance) => {
+                this._content = null;
+                const content = this._getContent();
+
                 if (this.remote) {
                     this._loadRemoteContent();
                 } else {
-                    instance.setContent(this._getContent());
+                    instance.setContent(content);
                 }
                 this.emitTo('pb-popover-show', { source: this, popup: instance });
             };
