@@ -12,6 +12,7 @@ import { resolveURL } from './utils.js';
  * where `url` is the relative or absolute URL to the image, `order` is an integer specifying the position at which
  * the image should be inserted in the list, and `element` points to the `pb-facs-link` element triggering the event.
  * @fires pb-show-annotation - When received, sets up the viewer to select a particular image and highlight coordinates
+ * @fires pb-hide-annotation - When received, hides rectangle around coordinates
  * @fires pb-facsimile-status - Indicates the status of loading an image into the viewer. The status is indicated
  * by the `status` property in event.detail as follows: `loading` - image was requested; `loaded` - image is displayed;
  * `fail` - image could not be loaded.
@@ -204,6 +205,7 @@ export class PbFacsimile extends pbMixin(LitElement) {
             this._facsimileObserver()
         });
         this.subscribeTo('pb-show-annotation', this._showAnnotationListener.bind(this));
+        this.subscribeTo('pb-hide-annotation', this._hideAnnotationListener.bind(this));
     }
 
     firstUpdated() {
@@ -455,6 +457,15 @@ export class PbFacsimile extends pbMixin(LitElement) {
         return this._facsimiles.findIndex(element => element.getImage() === file);
     }
 
+    _hideAnnotationListener(event) {
+        if (!this.viewer) {
+            return;
+        }
+        if (this.overlay) {
+            this.viewer.removeOverlay(this.overlay);
+            this.overlay = null;
+        }
+    }
     // reset zoom
     resetZoom() {
         if (!this.viewer) {

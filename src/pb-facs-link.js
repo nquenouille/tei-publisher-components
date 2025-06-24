@@ -78,8 +78,13 @@ export class PbFacsLink extends pbMixin(LitElement) {
     firstUpdated() {
         const link = this.shadowRoot.querySelector('a');
         link.addEventListener(this.trigger, this._linkListener.bind(this));
+        link.addEventListener('mouseleave', (ev) => {
+        this.emitTo('pb-hide-annotation', {
+            element: this
+            });
+        });
         if (this.emitOnLoad) {
-            this._trigger();
+            this.wait(() => { this._trigger(); });
         }
     }
 
