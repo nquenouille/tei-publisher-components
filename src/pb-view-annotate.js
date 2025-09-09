@@ -915,18 +915,20 @@ class PbViewAnnotate extends PbView {
       markerLayer.style.display = 'block';
   }
 
-  search(type, tokens) {
+  search(type, tokens, exact = true) {
     function escape(token) {
       let regex = token.replace(/[/.?+*\\]/g, (m) => `\\${m}`)
         .replace(/[\s\n\t]+/g, '\\s+');
-      if (/^\w/.test(regex)) {
-        regex = `\\b${regex}`;
-      }
-      if (/\w$/.test(regex)) {
-        regex = `${regex}\\b`;
-      }
-      return regex;
-    }
+        if (exact) {
+          if (/^\w/.test(regex)) {
+            regex = `\\b${regex}`;
+          }
+          if (/\w$/.test(regex)) {
+            regex = `${regex}\\b`;
+          }
+        }
+          return regex;
+        }
     function filter(node) {
       if (node.nodeType === Node.TEXT_NODE) {
         return NodeFilter.FILTER_ACCEPT;
