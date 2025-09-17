@@ -1,3 +1,130 @@
+## [2.25.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.5...v2.25.6) (2025-09-09)
+
+
+### Bug Fixes
+
+* **docker:** allign image ([45fcfe6](https://github.com/eeditiones/tei-publisher-components/commit/45fcfe682d4413baaf6413e3801201f46d7b0f0a)), closes [#244](https://github.com/eeditiones/tei-publisher-components/issues/244)
+* **docker:** minor fixes ([34ad702](https://github.com/eeditiones/tei-publisher-components/commit/34ad702e6e72455096421cfa6f77a9a921cf2b31))
+
+## [2.25.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.4...v2.25.5) (2025-08-16)
+
+
+### Bug Fixes
+
+* **i18n:** correct pl labels ([f861af7](https://github.com/eeditiones/tei-publisher-components/commit/f861af774050accc0a5479ae40a5be94c8f87f2f))
+
+## [2.25.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.3...v2.25.4) (2025-06-04)
+
+
+### Bug Fixes
+
+* **pb-leaflet-map:** collapse the layer control by default, so it doesn't use too much space ([78f160f](https://github.com/eeditiones/tei-publisher-components/commit/78f160fa9e87799453354b19b6186c1c53d2b48b))
+
+## [2.25.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.2...v2.25.3) (2025-05-30)
+
+
+### Bug Fixes
+
+* **pb-timeline:** Fix the timeframe label for some edge cases ([e6a8fbe](https://github.com/eeditiones/tei-publisher-components/commit/e6a8fbe915906ab51186cba2875ee0f107ba41e9))
+
+## [2.25.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.1...v2.25.2) (2025-04-11)
+
+
+### Bug Fixes
+
+* **pb-authority-lookup:** add attributes so the element can be configured via html and not just by sending an event ([fb7a6aa](https://github.com/eeditiones/tei-publisher-components/commit/fb7a6aae18b836dcec0db79339ae266a17204132))
+
+## [2.25.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.25.0...v2.25.1) (2025-03-14)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** abort requests to prevent race condition ([8ccf2ce](https://github.com/eeditiones/tei-publisher-components/commit/8ccf2ce6f3d1e55520cc1488445de3c92d99cb64))
+
+# [2.25.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.9...v2.25.0) (2025-03-13)
+
+
+### Bug Fixes
+
+* **pb-tify:** prevent flickering when requested page equals current page ([3d97de1](https://github.com/eeditiones/tei-publisher-components/commit/3d97de1c201eef6dbe091b74cae5f74d544837b2))
+
+
+### Features
+
+* **pb-tify:** add support for pb-facs-link coordinates (rectangle highlighting) ([67ab02f](https://github.com/eeditiones/tei-publisher-components/commit/67ab02f2fc4879aa2b3dc5ca14df3bade70f6d7b))
+
+## [2.24.9](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.8...v2.24.9) (2025-02-25)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** add "subforms" attribute to append parameters from other forms similar to pb-search et al ([c9ec6cf](https://github.com/eeditiones/tei-publisher-components/commit/c9ec6cfb7edb8403ec1ff75251dfad0322cd851e))
+* **pb-table-grid:** support i18n on column headers by interpreting label as i18n key ([63e9ed6](https://github.com/eeditiones/tei-publisher-components/commit/63e9ed6d4b4cb97ef3f1df6dc6673952267a7c18))
+
+## [2.24.8](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.7...v2.24.8) (2025-01-14)
+
+
+### Bug Fixes
+
+* **pb-login:** if "auto" is set, show login dialog as modal to prevent users from accessing content ([82256bc](https://github.com/eeditiones/tei-publisher-components/commit/82256bc9ccfece2e844e9555138b57fc910f1800))
+
+## [2.24.7](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.6...v2.24.7) (2024-12-12)
+
+
+### Bug Fixes
+
+* **pb-formula:** fix typo ([bace492](https://github.com/eeditiones/tei-publisher-components/commit/bace4928116a22eec3109f14f3f3de9fd8575ae3))
+* **pb-formula:** replace XML entities ([cd95621](https://github.com/eeditiones/tei-publisher-components/commit/cd95621077131ba080092f9c2213db32fc87da55))
+
+## [2.24.6](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.5...v2.24.6) (2024-12-02)
+
+
+### Bug Fixes
+
+* **pb-collapse:** too much space between trigger icon and text ([9b153b6](https://github.com/eeditiones/tei-publisher-components/commit/9b153b6056c2b1b9108656dad31a9b50670f8243))
+
+## [2.24.5](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.4...v2.24.5) (2024-11-21)
+
+
+### Bug Fixes
+
+* **pb-combo-box:** Clear items before refetching ([b6fdf68](https://github.com/eeditiones/tei-publisher-components/commit/b6fdf68040484df01de23ee28f6461f525ce5423))
+
+## [2.24.4](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.3...v2.24.4) (2024-11-14)
+
+
+### Bug Fixes
+
+* **pb-table-grid:** respect existing search parameter when using included search feature ([7abdd8f](https://github.com/eeditiones/tei-publisher-components/commit/7abdd8fb67368f0a864a14354c98839e527dda94))
+
+## [2.24.3](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.2...v2.24.3) (2024-10-10)
+
+
+### Bug Fixes
+
+* **pb-view-annotate:** allow placing element after selected text ([f7272c6](https://github.com/eeditiones/tei-publisher-components/commit/f7272c66d202fa4311324588b54b11af9fb4dd86))
+
+## [2.24.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.1...v2.24.2) (2024-07-23)
+
+
+### Bug Fixes
+
+* **pb-collapse:** collapse icons with fixed width ([0e83fbe](https://github.com/eeditiones/tei-publisher-components/commit/0e83fbecaaca0983bf282a80135cbf674668dfe3))
+
+## [2.24.1](https://github.com/eeditiones/tei-publisher-components/compare/v2.24.0...v2.24.1) (2024-07-16)
+
+
+### Bug Fixes
+
+* **pb-grid:** Fix calling pb-grid#addPanel(0) ([e326905](https://github.com/eeditiones/tei-publisher-components/commit/e326905a070224267dc1b1b0840ce368eeeac330))
+
+# [2.24.0](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.2...v2.24.0) (2024-06-27)
+
+
+### Features
+
+* **i18n:** add translations for mainland traditional Chinese; complete simplified Chinese; drop incomplete zh_TW ([0cf6127](https://github.com/eeditiones/tei-publisher-components/commit/0cf6127ebfbf9d39cbc60ca0a2c00b0cff52928b))
+
 ## [2.23.2](https://github.com/eeditiones/tei-publisher-components/compare/v2.23.1...v2.23.2) (2024-05-19)
 
 
