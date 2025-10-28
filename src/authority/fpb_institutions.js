@@ -7,8 +7,8 @@ function _details(item) {
       place = item.place.name.de;
     }
     let gnd = '';
-    if (item.gnd && item.gnd.value != null) {
-      gnd = 'GND: '.concat(item.gnd.value);
+    if (item.gnd && item.gnd != null) {
+      gnd = 'GND: '.concat(item.gnd);
     }
      return `${place.concat(' ', gnd)}`;
     }
@@ -34,7 +34,7 @@ export class FPB_Institutions extends Registry {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: item.name.de,
-                link: `https://fpb.saw-leipzig.de/places/institution/${encodeURIComponent(item.pid)}`,
+                link: `https://fpb.saw-leipzig.de/${encodeURIComponent(item.pid)}/json-ld/`,
                 details: _details(item),
                 strings: item.name.de,
                 provider: 'FPB_Institutions'
@@ -57,7 +57,7 @@ export class FPB_Institutions extends Registry {
    */
   async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return fetch(`https://fpb.saw-leipzig.de/api/places/institution/${encodeURIComponent(id)}`)
+    return fetch(`https://fpb.saw-leipzig.de/${encodeURIComponent(id)}/json-ld/`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -80,17 +80,17 @@ export class FPB_Institutions extends Registry {
           if (json.geonames && json.geonames.toString() != null) {
             output.geonames = json.geonames.toString();
           }
-          if (json.rism && json.rism.value != null) {
-              output.rism = json.rism.value;
+          if (json.rism && json.rism != null) {
+              output.rism = json.rism;
           }
-          if (json.viaf && json.viaf.value != null) {
-              output.viaf = json.viaf.value;
+          if (json.viaf && json.viaf != null) {
+              output.viaf = json.viaf;
           }
-          if (json.isil && json.isil.value != null) {
-              output.isil = json.isil.value;
+          if (json.isil && json.isil != null) {
+              output.isil = json.isil;
           }
-          if (json.gnd && json.gnd.value != null) {
-              output.gnd = json.gnd.value;
+          if (json.gnd && json.gnd != null) {
+              output.gnd = json.gnd;
           }
         return output;
       })
@@ -107,7 +107,7 @@ export class FPB_Institutions extends Registry {
         let info = this.infoInstitution(json);
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/places/institution/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name.concat(' (', json.place, ')')} </a>
+            <a href="https://fpb.saw-leipzig.de/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name.concat(' (', json.place, ')')} </a>
           </h3>
           ${info}
         `;
@@ -122,7 +122,7 @@ export class FPB_Institutions extends Registry {
   }
 
   infoInstitution(json) {
-    const rism = json.rism.value ? json.rism.value : 'Ohne RISM-Sigel';
-    return `<p>${rism}</p>`;
+    const rism = json.rism ? json.rism : 'Ohne RISM-Sigel';
+    return `<p>RISM-Sigle: ${rism}</p>`;
   }
 }

@@ -80,7 +80,7 @@ export class FPB_Persons extends Registry {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: _names(item),
-                link: `https://fpb.saw-leipzig.de/api/person/${encodeURIComponent(item.pid)}`,
+                link: `https://fpb.saw-leipzig.de/${encodeURIComponent(item.pid)}/json-ld/`,
                 details: _details(item),
                 strings: lastname + firstname + ton,
                 provider: 'FPB'
@@ -103,7 +103,7 @@ export class FPB_Persons extends Registry {
    */
   async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return fetch(`https://fpb.saw-leipzig.de/api/person/${encodeURIComponent(id)}`)
+    return fetch(`https://fpb.saw-leipzig.de/${encodeURIComponent(id)}/json-ld/`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -151,32 +151,47 @@ export class FPB_Persons extends Registry {
         if (json.deathplace != null && json.deathplace.longitude != null) {
           output.deathLng = json.deathplace.longitude.toString();
         }
-        if (json.baptismday && json.baptismday != null) {
-          output.baptismDate = json.baptismday;
+
+        const baptismEvent = json.lifeEvents?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Taufe'));
+        if(baptismEvent) {
+          const hasStartDate = !!baptismEvent.startDate;
+          const location = baptismEvent.location;
+          const hasLocationName = !!location?.name?.find(n => n['@language'] === 'de')?.value;
+          const hasCoordinates = !!(location?.latitude && location?.longitude);
+          if(location && hasStartDate) {
+            output.baptismDate = baptismEvent.startDate;
+          }
+          if(location && hasLocationName) {
+            output.burialPlace = location.name.find(n => n['@language'] === 'de').value;
+          }
+          if(location && hasCoordinates) {
+            output.baptismLat = location.latitude;
+            output.baptismLng = location.longitude;
+          }
+
         }
-        if (json.baptismplace != null && json.baptismplace.name[0].value != null) {
-          output.baptismPlace = json.baptismplace.name[0].value;
+        const burialEvent = json.lifeEvents?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Beerdigung'));
+        if(burialEvent) {
+          const hasStartDate = !!burialEvent.startDate;
+          const location = burialEvent.location;
+          const hasLocationName = !!location?.name?.find(n => n['@language'] === 'de')?.value;
+          const hasCoordinates = !!(location?.latitude && location?.longitude);
+          if(location && hasStartDate) {
+            output.burialDate = burialEvent.startDate;
+          }
+          if(location && hasLocationName) {
+            output.burialPlace = location.name.find(n => n['@language'] === 'de').value;
+          }
+          if(location && hasCoordinates) {
+            output.burialLat = location.latitude;
+            output.burialLng = location.longitude;
+          }
         }
-        if (json.baptismplace != null && json.baptismplace.latitude != null) {
-          output.baptismLat = json.baptismplace.latitude.toString();
-        }
-        if (json.baptismplace != null && json.baptismplace.longitude != null) {
-          output.baptismLng = json.baptismplace.longitude.toString();
-        }
-        if (json.burialday && json.burialday != null) {
-          output.burialDate = json.burialday;
-        }
-        if (json.burialplace != null && json.burialplace.name[0].value != null) {
-          output.burialPlace = json.burialplace.name[0].value;
-        }
-        if (json.burialplace != null && json.burialplace.latitude != null) {
-          output.burialLat = json.burialplace.latitude.toString();
-        }
-        if (json.burialplace != null && json.burialplace.longitude != null) {
-          output.burialLng = json.burialplace.longitude.toString();
-        }
-        if (json.professions.length > 0 && json.professions.map(p =>p.name[0]) != null) {
-          output.professionOrOccupation = json.professions.map(p =>p.name[0].value);
+        if(json.professions && json.professions.length > 0) {
+          const germanProfessions = json.professions.map(p => p?.name?.find(n => n['@language'] === 'de')?.name).filter(Boolean);
+          if(json.professions && germanProfessions.length > 0) {
+            output.professionOrOccupation = germanProfessions;
+          }
         }
         if (json.bdid && json.bdid != null) {
           output.bdid = json.bdid;
@@ -212,7 +227,7 @@ export class FPB_Persons extends Registry {
         } else firstname = 'NN';
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/person/person/${encodeURIComponent(json.pid)}" target="_blank"> ${lastname + ', ' + firstname + ton} </a>
+            <a href="https://fpb.saw-leipzig.de/${encodeURIComponent(json.pid)}" target="_blank"> ${lastname + ', ' + firstname + ton} </a>
           </h3>
           ${info}
         `;
@@ -227,7 +242,7 @@ export class FPB_Persons extends Registry {
   }
 
   infoPerson(json) {
-    const professionOrOccupation = json.professions.length > 0 && json.professions.map(p =>p.name[0]) != null ? json.professions.map(p =>p.name[0].value) : [];
+    const professionOrOccupation = json.professions && json.professions.length > 0 ? json.professions.map(p => p?.name?.find(n => n['@language'] === 'de')?.name) : [];
     const birthDate = json.birthday != null ? '*'.concat(json.birthday) : '';
     const deathDate = json.deathday != null ? '✝'.concat(json.deathday) : '';
     return `<p>${birthDate} ${deathDate}</p>

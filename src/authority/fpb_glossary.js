@@ -17,13 +17,12 @@ export class FPB_Glossary extends Registry {
           return Promise.reject();
         })
         .then((json) => {
-            json.items.forEach((item) => {          
+            json.items.forEach((item) => {  
             const result = {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.slug}` : item.slug),
                 label: item.title.de,
-                link: `https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(item.slug)}`,
-                details: item.title.de,
+                link: `https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(item.slug)}/json-ld/`,
                 strings: item.title.de,
                 provider: 'FPB'
             };
@@ -45,7 +44,7 @@ export class FPB_Glossary extends Registry {
    */
   async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return fetch(`https://fpb.saw-leipzig.de/api/glossary/${encodeURIComponent(id)}`)
+    return fetch(`https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(id)}/json-ld/`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -65,9 +64,9 @@ export class FPB_Glossary extends Registry {
           ')': ''
         };
         
-        output.title = json.title.de;
-        output.desc = json.text.de.replace(/[*]/g, m => chars[m]);
-        output.link = json.slug;
+        output.title = json.name[0].name;
+        output.desc = json.description[0].description.replace(/[*]/g, m => chars[m]);
+        output.link = json.pid;
         return output;
       })
       .catch(() => Promise.reject());
@@ -80,17 +79,17 @@ export class FPB_Glossary extends Registry {
     return new Promise((resolve, reject) => {
       this.getRecord(key)
       .then((json) => {   
-        let info = json.title.de;
+        let info = json.name[0].name;
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(json.slug)}" target="_blank"> ${json.title.de} </a>
+            <a href="https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name[0].name} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
-          id: this._prefix ? `${this._prefix}-${json.slug}` : json.slug,
-          strings: json.title.de
+          id: this._prefix ? `${this._prefix}-${json.pid}` : json.pid,
+          strings: json.name[0].name
         });
       })
       .catch(() => reject());

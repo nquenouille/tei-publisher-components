@@ -2,7 +2,7 @@
 import { Registry } from './registry.js';
 
 function _details(item) {
-    let gnd = item.gnd && item.gnd.value ? item.gnd.value : '';
+    let gnd = item.gnd ? item.gnd : '';
     let lat = item.latitude ? item.latitude.toString() : '';
     let lng = item.longitude ? item.longitude.toString() : '';
     if (item.latitude && lat.startsWith('-')) {
@@ -15,10 +15,10 @@ function _details(item) {
     } else {
         lng = 'E '.concat(lng);
     }
-    if (item.gnd && item.gnd.value != null) {
-        gnd = 'GND: '.concat(item.gnd.value);
+    if (item.gnd && item.gnd != null) {
+        gnd = 'GND: '.concat(item.gnd);
       }
-      else gnd=' (no GND)';
+      else gnd = ' (no GND)';
     return `${lat.concat(', ', lng, ' ', gnd)}`;
   }
 
@@ -38,12 +38,12 @@ export class FPB_Places extends Registry {
           return Promise.reject();
         })
         .then((json) => {
-            json.places.forEach((item) => {        
+            json.places.forEach((item) => {    
             const result = {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: item.name.de,
-                link: `https://fpb.saw-leipzig.de/places/place/${encodeURIComponent(item.pid)}`,
+                link: `https://fpb.saw-leipzig.de/${encodeURIComponent(item.pid)}/json-ld/`,
                 details: _details(item),
                 strings: item.name.de,
                 provider: 'FPB_Places'
@@ -66,7 +66,7 @@ export class FPB_Places extends Registry {
    */
   async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return fetch(`https://fpb.saw-leipzig.de/api/places/${encodeURIComponent(id)}`)
+    return fetch(`https://fpb.saw-leipzig.de/${encodeURIComponent(id)}/json-ld/`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -84,10 +84,10 @@ export class FPB_Places extends Registry {
           output.lng = json.longitude.toString();
         }
         if (json.geonames) {
-          output.geonames = json.geonames.value.toString();
+          output.geonames = json.geonames.toString();
         }
-        if (json.gnd && json.gnd.value != null) {
-            output.gnd = json.gnd.value;
+        if (json.gnd && json.gnd != null) {
+            output.gnd = json.gnd;
         }
         return output;
       })
@@ -104,7 +104,7 @@ export class FPB_Places extends Registry {
         let info = this.infoPlace(json);
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/places/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name} </a>
+            <a href="https://fpb.saw-leipzig.de/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name} </a>
           </h3>
           ${info}
         `;
