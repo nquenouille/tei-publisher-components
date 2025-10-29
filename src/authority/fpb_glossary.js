@@ -20,9 +20,9 @@ export class FPB_Glossary extends Registry {
             json.items.forEach((item) => {  
             const result = {
                 register: this._register,
-                id: (this._prefix ? `${this._prefix}-${item.slug}` : item.slug),
+                id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: item.title.de,
-                link: `https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(item.slug)}/json-ld/`,
+                link: `https://fpb.saw-leipzig.de/${encodeURIComponent(item.pid)}/json-ld/`,
                 strings: item.title.de,
                 provider: 'FPB'
             };
@@ -44,7 +44,7 @@ export class FPB_Glossary extends Registry {
    */
   async getRecord(key) {
     const id = this._prefix ? key.substring(this._prefix.length + 1) : key;
-    return fetch(`https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(id)}/json-ld/`)
+    return fetch(`https://fpb.saw-leipzig.de/${encodeURIComponent(id)}/json-ld/`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -82,7 +82,7 @@ export class FPB_Glossary extends Registry {
         let info = json.name[0].name;
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/glossary/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name[0].name} </a>
+            <a href="https://fpb.saw-leipzig.de/${encodeURIComponent(json.pid)}" target="_blank"> ${json.name[0].name} </a>
           </h3>
           ${info}
         `;
