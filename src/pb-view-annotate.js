@@ -919,7 +919,7 @@ class PbViewAnnotate extends PbView {
     function escape(token) {
       let regex = token.replace(/[/.?+*\\]/g, (m) => `\\${m}`)
         .replace(/[\s\n\t]+/g, '\\s+');
-        if (token.length < 2 || exact) {
+        if (exact) {
           if (/^\w/.test(regex)) {
             regex = `\\b${regex}`;
           }
