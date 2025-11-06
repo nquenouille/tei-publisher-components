@@ -112,6 +112,7 @@ export class FPB_Persons extends Registry {
       })
       .then((json) => {
         const output = Object.assign({}, json);
+        console.log("JSON", json)
         if (json.lastname && json.lastname != null && json.firstname && json.firstname != null) {
         output.name = json.lastname + ', ' + json.firstname;} 
           else if (!json.lastname && json.lastname == null && json.firstname && json.firstname != null && !json.title_of_nobility && json.title_of_nobility == null) {
@@ -152,39 +153,39 @@ export class FPB_Persons extends Registry {
           output.deathLng = json.deathplace.longitude.toString();
         }
 
-        const baptismEvent = json.lifeEvents?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Taufe'));
+        const baptismEvent = json.life_events?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Taufe'));
         if(baptismEvent) {
-          const hasStartDate = !!baptismEvent.startDate;
+          const hasStartDate = !!baptismEvent.start_date;
           const location = baptismEvent.location;
           const hasLocationName = !!location?.name?.find(n => n['@language'] === 'de')?.value;
           const hasCoordinates = !!(location?.latitude && location?.longitude);
-          if(location && hasStartDate) {
-            output.baptismDate = baptismEvent.startDate;
+          if(hasStartDate) {
+            output.baptismDate = baptismEvent.start_date;
           }
           if(location && hasLocationName) {
-            output.burialPlace = location.name.find(n => n['@language'] === 'de').value;
+            output.baptismPlace = location.name.find(n => n['@language'] === 'de').value;
           }
           if(location && hasCoordinates) {
-            output.baptismLat = location.latitude;
-            output.baptismLng = location.longitude;
+            output.baptismLat = location.latitude.toString();
+            output.baptismLng = location.longitude.toString();
           }
 
         }
-        const burialEvent = json.lifeEvents?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Beerdigung'));
+        const burialEvent = json.life_events?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Beerdigung'));
         if(burialEvent) {
-          const hasStartDate = !!burialEvent.startDate;
+          const hasStartDate = !!burialEvent.start_date;
           const location = burialEvent.location;
           const hasLocationName = !!location?.name?.find(n => n['@language'] === 'de')?.value;
           const hasCoordinates = !!(location?.latitude && location?.longitude);
-          if(location && hasStartDate) {
-            output.burialDate = burialEvent.startDate;
+          if(hasStartDate) {
+            output.burialDate = burialEvent.start_date;
           }
           if(location && hasLocationName) {
             output.burialPlace = location.name.find(n => n['@language'] === 'de').value;
           }
           if(location && hasCoordinates) {
-            output.burialLat = location.latitude;
-            output.burialLng = location.longitude;
+            output.burialLat = location.latitude.toString();
+            output.burialLng = location.longitude.toString();
           }
         }
         if(json.professions && json.professions.length > 0) {
