@@ -113,15 +113,15 @@ export class FPB_Persons extends Registry {
       .then((json) => {
         const output = Object.assign({}, json);
         console.log("JSON", json)
-        if (json.lastname && json.lastname != null && json.firstname && json.firstname != null) {
-        output.name = json.lastname + ', ' + json.firstname;} 
-          else if (!json.lastname && json.lastname == null && json.firstname && json.firstname != null && !json.title_of_nobility && json.title_of_nobility == null) {
+        if (json.familyname && json.familyname != null && json.firstname && json.firstname != null) {
+        output.name = json.familyname + ', ' + json.firstname;} 
+          else if (!json.familyname && json.familyname == null && json.firstname && json.firstname != null && !json.title_of_nobility && json.title_of_nobility == null) {
             output.name = 'NN, ' + json.firstname
           } 
-          else if (json.lastname && json.lastname != null && !json.firstname && json.firstname == null) {
-            output.name = json.lastname + ', NN'
+          else if (json.familyname && json.familyname != null && !json.firstname && json.firstname == null) {
+            output.name = json.familyname + ', NN'
           }
-          else if (!json.lastname && json.lastname == null && json.firstname && json.firstname != null && json.title_of_nobility && json.title_of_nobility != null)
+          else if (!json.familyname && json.familyname == null && json.firstname && json.firstname != null && json.title_of_nobility && json.title_of_nobility != null)
             output.name = json.firstname + ', ' + json.title_of_nobility
           else {output.name = 'NN'}
         output.link = json.pid;
@@ -216,10 +216,10 @@ export class FPB_Persons extends Registry {
         let lastname = '';
         let firstname = '';
         let ton = '';
-        if (json.lastname != null) {
-          lastname = json.lastname;
+        if (json.familyname != null) {
+          lastname = json.familyname;
         } 
-        else if (json.lastname == null && json.title_of_nobility != null) {
+        else if (json.familyname == null && json.title_of_nobility != null) {
           ton = ', ' + json.title_of_nobility; 
         }
         else lastname = 'NN';
