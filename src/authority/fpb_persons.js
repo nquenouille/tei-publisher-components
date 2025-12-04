@@ -27,6 +27,7 @@ function _names(item) {
   return `${lastnames}${firstnames}${ton}`;
 }
 function _details(item) {
+  console.log("ITEM", item)
   let profession = '';
   if (item.professions.length > 0 && item.professions.map(p => p.name.de) != null) {
     profession = item.professions.map(p =>p.name.de).join(', ');
@@ -153,8 +154,9 @@ export class FPB_Persons extends Registry {
           output.deathLng = json.deathplace.longitude.toString();
         }
 
-        const baptismEvent = json.life_events?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Taufe'));
+        const baptismEvent = json.life_event?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Taufe'));
         if(baptismEvent) {
+          output.baptismEvent = baptismEvent;
           const hasStartDate = !!baptismEvent.start_date;
           const location = baptismEvent.location;
           const hasLocationName = !!location?.name?.find(n => n['@language'] === 'de')?.value;
@@ -171,8 +173,9 @@ export class FPB_Persons extends Registry {
           }
 
         }
-        const burialEvent = json.life_events?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Beerdigung'));
+        const burialEvent = json.life_event?.find(event => event?.name?.some(n => n['@language'] === 'de' && n.name === 'Beerdigung'));
         if(burialEvent) {
+          output.burialEvent = burialEvent;
           const hasStartDate = !!burialEvent.start_date;
           const location = burialEvent.location;
           const hasLocationName = !!location?.name?.find(n => n['@language'] === 'de')?.value;
@@ -188,9 +191,9 @@ export class FPB_Persons extends Registry {
             output.burialLng = location.longitude.toString();
           }
         }
-        if(json.professions && json.professions.length > 0) {
-          const germanProfessions = json.professions.map(p => p?.name?.find(n => n['@language'] === 'de')?.name).filter(Boolean);
-          if(json.professions && germanProfessions.length > 0) {
+        if(json.profession && json.profession.length > 0) {
+          const germanProfessions = json.profession.map(p => p?.name?.find(n => n['@language'] === 'de')?.name).filter(Boolean);
+          if(json.profession && germanProfessions.length > 0) {
             output.professionOrOccupation = germanProfessions;
           }
         }
@@ -243,7 +246,8 @@ export class FPB_Persons extends Registry {
   }
 
   infoPerson(json) {
-    const professionOrOccupation = json.professions && json.professions.length > 0 ? json.professions.map(p => p?.name?.find(n => n['@language'] === 'de')?.name) : [];
+    console.log("JSON_INFO", json)
+    const professionOrOccupation = json.profession && json.profession.length > 0 ? json.profession.map(p => p?.name?.find(n => n['@language'] === 'de')?.name) : [];
     const birthDate = json.birthday != null ? '*'.concat(json.birthday) : '';
     const deathDate = json.deathday != null ? '✝'.concat(json.deathday) : '';
     return `<p>${birthDate} ${deathDate}</p>
