@@ -108,6 +108,7 @@ export const base = `
         max-width: var(--pb-popover-max-width, auto);
         min-width: var(--pb-popover-min-width, auto);
         color: var(--pb-popover-color);
+        white-space: pre-line;
     }
 `;
 
