@@ -65,25 +65,17 @@ export class FPB_Persons extends Registry {
         })
         .then((json) => {
             json.persons.forEach((item) => {  
-              let lastname = '';
-              let firstname = '';
-              let ton = '';
-              if (item.lastname != null) {
-                lastname = item.lastname + ', ';
-              } else lastname = '';
-              if (item.firstname != null) {
-                firstname = item.firstname;
-              } else {firstname = '';}  
-              if (item.title_of_nobility != null) {
-                ton = ', ' + item.title_of_nobility;
-              } else {ton = '';}           
+              let name = '';
+              if (item.name != null) {
+                name = item.name;
+              } else name = '';      
             const result = {
                 register: this._register,
                 id: (this._prefix ? `${this._prefix}-${item.pid}` : item.pid),
                 label: _names(item),
                 link: `https://fpb.saw-leipzig.de/${encodeURIComponent(item.pid)}/json-ld/`,
                 details: _details(item),
-                strings: lastname + firstname + ton,
+                strings: name,
                 provider: 'FPB'
             };
             results.push(result);
@@ -114,21 +106,10 @@ export class FPB_Persons extends Registry {
       .then((json) => {
         const output = Object.assign({}, json);
         console.log("JSON", json)
-        if (json.familyname && json.familyname != null && json.firstname && json.firstname != null) {
-        output.name = json.familyname + ', ' + json.firstname;} 
-          else if (!json.familyname && json.familyname == null && json.firstname && json.firstname != null && !json.title_of_nobility && json.title_of_nobility == null) {
-            output.name = 'NN, ' + json.firstname
-          } 
-          else if (json.familyname && json.familyname != null && !json.firstname && json.firstname == null) {
-            output.name = json.familyname + ', NN'
-          }
-          else if (!json.familyname && json.familyname == null && json.firstname && json.firstname != null && json.title_of_nobility && json.title_of_nobility != null)
-            output.name = json.firstname + ', ' + json.title_of_nobility
-          else {output.name = 'NN'}
+        if (json.name && json.name != null) {
+            output.name = json.name;} 
+        else {output.name = 'NN'}
         output.link = json.pid;
-        if (json.title_of_nobility && json.title_of_nobility != null) {
-          output.titleOfNobility = json.title_of_nobility
-        }
         if (json.birthday && json.birthday != null) {
           output.birthDate = json.birthday;
         }
@@ -216,29 +197,21 @@ export class FPB_Persons extends Registry {
       this.getRecord(key)
       .then((json) => {   
         let info = this.infoPerson(json);
-        let lastname = '';
-        let firstname = '';
-        let ton = '';
-        if (json.familyname != null) {
-          lastname = json.familyname;
+        let name = '';
+        if (json.name != null) {
+          name = json.name;
         } 
-        else if (json.familyname == null && json.title_of_nobility != null) {
-          ton = ', ' + json.title_of_nobility; 
-        }
-        else lastname = 'NN';
-        if (json.firstname != null) {
-          firstname = json.firstname;
-        } else firstname = 'NN';
+        else name = 'NN';
         const out = `
           <h3 class="label">
-            <a href="https://fpb.saw-leipzig.de/${encodeURIComponent(json.pid)}" target="_blank"> ${lastname + ', ' + firstname + ton} </a>
+            <a href="https://fpb.saw-leipzig.de/${encodeURIComponent(json.pid)}" target="_blank"> ${name} </a>
           </h3>
           ${info}
         `;
         container.innerHTML = out;
         resolve({
           id: this._prefix ? `${this._prefix}-${json.pid}` : json.pid,
-          strings: [lastname].concat(',',firstname)
+          strings: name
         });
       })
       .catch(() => reject());
