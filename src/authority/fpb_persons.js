@@ -211,7 +211,7 @@ export class FPB_Persons extends Registry {
         container.innerHTML = out;
         resolve({
           id: this._prefix ? `${this._prefix}-${json.pid}` : json.pid,
-          strings: name
+          strings: [name]
         });
       })
       .catch(() => reject());
