@@ -152,13 +152,14 @@ export class PbPopover extends pbMixin(LitElement) {
         this.stopPropagation = false;
         this._tippy = null;
         this._content = null;
+        this._tooltipId = `pb-popover-${Math.random().toString(36).slice(2)}`;
     }
 
     render() {
         if (this.for) {
             return html`<div class="hidden"><slot></slot></div>`;
         }
-        return html`<span id="link" part="trigger" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
+        return html`<span id="link" part="trigger" tabindex="0" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
     }
 
     disconnectedCallback() {
@@ -278,6 +279,23 @@ export class PbPopover extends pbMixin(LitElement) {
         }
     }
 
+    _updateA11y(target, text) {
+        let desc = this.getRootNode().querySelector(`#${this._tooltipId}`);
+        const root = this.getRootNode();
+        if (!desc) {
+            desc = document.createElement('span');
+            desc.id = this._tooltipId;
+            desc.className = 'sr-only';
+            if (root.nodeType === Node.DOCUMENT_NODE) {
+                document.body.appendChild(desc);
+            } else {
+                root.appendChild(desc);
+            }
+        }
+
+        desc.textContent = text || '';
+    }
+
     firstUpdated() {
         super.firstUpdated();
 
@@ -340,12 +358,19 @@ export class PbPopover extends pbMixin(LitElement) {
             }
             if (this.popupClass) {
                 options.onCreate = (instance) => {
-                    instance.popper.classList.add(this.popupClass);
+                    instance.popper.setAttribute('role', 'tooltip');
+                    if (this.popupClass) {
+                        instance.popper.classList.add(this.popupClass);
+                    }
                 };
             }
             options.onShow = (instance) => {
+                target.setAttribute('aria-expanded', 'true');
                 this._content = null;
                 const content = this._getContent();
+                const text = content?.textContent?.trim() || '';
+                this._updateA11y(target, text);
+                instance.setContent(content);
 
                 if (this.remote) {
                     this._loadRemoteContent();
@@ -354,9 +379,15 @@ export class PbPopover extends pbMixin(LitElement) {
                 }
                 this.emitTo('pb-popover-show', { source: this, popup: instance });
             };
+            options.onHide = (instance) => {
+                target.setAttribute('aria-expanded', 'false');
+            };
 
             this._tippy = tippy(target, options);
         }
+        target.setAttribute('aria-describedby', this._tooltipId);
+        target.setAttribute('aria-haspopup', 'true');
+        target.setAttribute('aria-expanded', 'false');
     }
 
     _loadRemoteContent() {
@@ -386,6 +417,15 @@ export class PbPopover extends pbMixin(LitElement) {
                 }
                 div {
                     float: left;
+                }
+                .sr-only {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    height: 1px;
+                    overflow: hidden;
+                    clip: rect(0 0 0 0);
+                    white-space: nowrap;
                 }
                 #link {
                     display: inline;
