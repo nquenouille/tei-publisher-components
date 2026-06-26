@@ -159,7 +159,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.for) {
             return html`<div class="hidden"><slot></slot></div>`;
         }
-        return html`<span id="link" part="trigger" tabindex="0" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
+        return html`<span id="link" part="trigger" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
     }
 
     disconnectedCallback() {
@@ -385,7 +385,6 @@ export class PbPopover extends pbMixin(LitElement) {
 
             this._tippy = tippy(target, options);
         }
-        target.setAttribute('aria-describedby', this._tooltipId);
         target.setAttribute('aria-haspopup', 'true');
         target.setAttribute('aria-expanded', 'false');
     }
