@@ -93,7 +93,7 @@ export class PbHighlight extends pbMixin(LitElement) {
         if (this.disabled) {
             return html`<slot></slot>`;
         }
-        return html`<span id="content" class="${this._className}" @mouseover="${this._mouseOver}"><slot></slot></span>`;
+        return html`<span id="content" class="${this._className}" tabindex="0" @mouseover="${this._mouseOver}" @focus="${this._mouseOver}"><slot></slot></span>`;
     }
 
     static get styles() {
