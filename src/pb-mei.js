@@ -226,8 +226,12 @@ export class PbMei extends pbMixin(LitElement) {
         if (!button.active) {
             this._midiPlayer.stop();
             button.icon = 'av:play-arrow';
+            button.title = translate('dialogs.play');
+            button.setAttribute('aria-label', translate('dialogs.play'));
         } else {
             button.icon = 'av:stop';
+            button.title = translate('dialogs.stop');
+            button.setAttribute('aria-label', translate('dialogs.stop'));
             if (this._midiPaused) {
                 this._midiPaused = false;
                 this._midiPlayer.resume();
@@ -261,9 +265,9 @@ export class PbMei extends pbMixin(LitElement) {
         return html`
             <div id="toolbar" part="toolbar">
                 <div class="${this._pages === 1 ? 'hidden' : ''}">
-                    <paper-icon-button id="pageLeft" icon="icons:chevron-left" @click="${this._previousPage}"
+                    <paper-icon-button id="pageLeft" icon="icons:chevron-left" title="${translate('dialogs.previousPage')}" aria-label="${translate('dialogs.previousPage')}" @click="${this._previousPage}"
                         ?disabled="${this._page === 1}"></paper-icon-button>
-                    <paper-icon-button id="pageRight" icon="icons:chevron-right" @click="${this._nextPage}"
+                    <paper-icon-button id="pageRight" icon="icons:chevron-right" title="${translate('dialogs.nextPage')}" aria-label="${translate('dialogs.nextPage')}" @click="${this._nextPage}"
                         ?disabled="${this._page === this._pages}"></paper-icon-button>
                 </div>
                 ${ this._renderPlayer() }

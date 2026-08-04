@@ -29,7 +29,11 @@
     "serverError": "Die Anfrage an den Server schlug fehl.",
     "generatingFile": "Erzeuge Datei...",
     "downloadMessage": "Das Erzeugen einer Datei zum Download kann bis zu mehrere Minuten dauern. Bitte warten Sie. Das Fenster sollte sich automatisch schließen, sobald der Download beendet wurde.",
-    "loading": "Lade ..."
+    "loading": "Lade ...",
+    "stop": "Wiedergabe stoppen",
+    "play": "Wiedergabe starten",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite"
   },
   "document": {
     "contents": "Inhalt",
