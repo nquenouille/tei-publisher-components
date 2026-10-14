@@ -385,7 +385,6 @@ export class PbPopover extends pbMixin(LitElement) {
 
             this._tippy = tippy(target, options);
         }
-        target.setAttribute('aria-haspopup', 'true');
         target.setAttribute('aria-expanded', 'false');
     }
 
