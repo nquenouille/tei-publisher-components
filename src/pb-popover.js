@@ -159,7 +159,7 @@ export class PbPopover extends pbMixin(LitElement) {
         if (this.for) {
             return html`<div class="hidden"><slot></slot></div>`;
         }
-        return html`<span id="link" part="trigger" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
+        return html`<span id="link" tabindex="0" part="trigger" class="${this.persistent ? 'persistent' : ''}"><slot name="default"><slot></slot></slot></span><span class="hidden"><slot name="alternate"></slot></span>`;
     }
 
     disconnectedCallback() {
@@ -169,6 +169,9 @@ export class PbPopover extends pbMixin(LitElement) {
         }
         if (this._observer) {
             this._observer.disconnect();
+        }
+        if (this._onKeydown) {
+            this.shadowRoot.getElementById('link')?.removeEventListener('keydown', this._onKeydown);
         }
     }
 
@@ -286,6 +289,7 @@ export class PbPopover extends pbMixin(LitElement) {
             desc = document.createElement('span');
             desc.id = this._tooltipId;
             desc.className = 'sr-only';
+            desc.setAttribute('role', 'tooltip');
             if (root.nodeType === Node.DOCUMENT_NODE) {
                 document.body.appendChild(desc);
             } else {
@@ -294,6 +298,12 @@ export class PbPopover extends pbMixin(LitElement) {
         }
 
         desc.textContent = text || '';
+        const describedBy = new Set((target.getAttribute('aria-describedby') || '')
+            .split(/\s+/)
+            .filter(Boolean)
+        );
+        describedBy.add(this._tooltipId);
+        target.setAttribute('aria-describedby', [...describedBy].join(' '));
     }
 
     firstUpdated() {
@@ -356,17 +366,17 @@ export class PbPopover extends pbMixin(LitElement) {
                     ]
                 }
             }
-            if (this.popupClass) {
-                options.onCreate = (instance) => {
-                    instance.popper.setAttribute('role', 'tooltip');
-                    if (this.popupClass) {
-                        instance.popper.classList.add(this.popupClass);
-                    }
-                };
-            }
+            
+            options.onCreate = (instance) => {
+                instance.popper.setAttribute('role', 'tooltip');
+                if (this.popupClass) {
+                    instance.popper.classList.add(this.popupClass);
+                }
+            };
+            
             options.onShow = (instance) => {
-                target.setAttribute('aria-expanded', 'true');
                 this._content = null;
+                instance.popper.style.fontSize = getComputedStyle(this).fontSize;
                 const content = this._getContent();
                 const text = content?.textContent?.trim() || '';
                 this._updateA11y(target, text);
@@ -379,13 +389,16 @@ export class PbPopover extends pbMixin(LitElement) {
                 }
                 this.emitTo('pb-popover-show', { source: this, popup: instance });
             };
-            options.onHide = (instance) => {
-                target.setAttribute('aria-expanded', 'false');
-            };
-
             this._tippy = tippy(target, options);
+            this._onKeydown = (ev) => {
+            if (ev.key === 'Escape' && this._tippy?.state.isVisible) {
+                ev.stopPropagation();
+                this._tippy.hide();
+                target.focus();
+            }
+};
+target.addEventListener('keydown', this._onKeydown);
         }
-        target.setAttribute('aria-expanded', 'false');
     }
 
     _loadRemoteContent() {
